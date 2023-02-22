@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Chat Room</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			var socket = new WebSocket("ws://localhost:8080");
+
+			socket.onopen = function(event) {
+				console.log("Connected to server");
+			};
+
+			socket.onmessage = function(event) {
+				console.log("Message received: " + event.data);
+				var message = JSON.parse(event.data);
+				$("#chat-history").append("<p>" + message.sender + ": " + message.content + "</p>");
+			};
+
+			$("#send-button").click(function() {
+				var message = $("#message-input").val();
+				console.log("Sending message: " + message);
+				var data = {
+					"sender": $("#username-input").val(),
+					"content": message
+				};
+				socket.send(JSON.stringify(data));
+				$("#message-input").val("");
+			});
+		});
+	</script>
+</head>
+<body>
+	<h1>Chat Room</h1>
+	<div id="chat-history"></div>
+	<label for="username-input">Username:</label>
+	<input type="text" id="username-input">
+	<br>
+	<input type="text" id="message-input">
+	<button id="send-button">Send</button>
+</body>
+</html>
