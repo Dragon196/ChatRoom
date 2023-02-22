@@ -4,28 +4,28 @@
 	<meta charset="UTF-8">
 	<title>Chat Room</title>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
 	<script>
 		$(document).ready(function() {
-			var socket = new WebSocket("ws://localhost:8080");
+			var socket = io.connect("http://localhost:5000");
 
-			socket.onopen = function(event) {
-				console.log("Connected to server");
-			};
+			socket.on('connect', function() {
+				console.log('Connected to server');
+			});
 
-			socket.onmessage = function(event) {
-				console.log("Message received: " + event.data);
-				var message = JSON.parse(event.data);
-				$("#chat-history").append("<p>" + message.sender + ": " + message.content + "</p>");
-			};
+			socket.on('message', function(data) {
+				console.log('Message received: ' + JSON.stringify(data));
+				$("#chat-history").append("<p>" + data.sender + ": " + data.content + "</p>");
+			});
 
 			$("#send-button").click(function() {
 				var message = $("#message-input").val();
-				console.log("Sending message: " + message);
+				console.log('Sending message: ' + message);
 				var data = {
 					"sender": $("#username-input").val(),
 					"content": message
 				};
-				socket.send(JSON.stringify(data));
+				socket.send(data);
 				$("#message-input").val("");
 				$("#chat-history").append("<p>You: " + message + "</p>");
 			});
