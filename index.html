@@ -27,6 +27,7 @@
 				};
 				socket.send(JSON.stringify(data));
 				$("#message-input").val("");
+				$("#chat-history").append("<p>You: " + message + "</p>");
 			});
 		});
 	</script>
